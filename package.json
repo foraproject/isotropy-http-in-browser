@@ -1,0 +1,16 @@
+{
+    "author": "Jeswin Kumar <jeswinpk@agilehead.com>",
+    "name": "isotropy-request-response-in-browser",
+    "version": "0.1.0",
+    "description": "Browser versions of Node's request and response tailored for the Isotropy project.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jeswin/isotropy-request-response-in-browser.git"
+    },
+    "main": "lib/isotropy-request-response-in-browser.js",
+    "dependencies": {},
+    "devDependencies": {},
+    "engines": { "node": ">= 0.11.9" },
+    "keywords": ["isomorphic", "http"],
+    "license" : "GPL-3.0+"
+}
