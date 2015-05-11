@@ -8,7 +8,9 @@
         "url": "https://github.com/jeswin/isotropy-request-response-in-browser.git"
     },
     "main": "lib/isotropy-request-response-in-browser.js",
-    "dependencies": {},
+    "dependencies": {
+        "events": "*"
+    },
     "devDependencies": {},
     "engines": { "node": ">= 0.11.9" },
     "keywords": ["isomorphic", "http"],
