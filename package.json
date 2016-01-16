@@ -1,17 +1,29 @@
 {
     "author": "Jeswin Kumar <jeswinpk@agilehead.com>",
     "name": "isotropy-request-response-in-browser",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "description": "Browser versions of Node's request and response tailored for the Isotropy project.",
     "repository": {
         "type": "git",
         "url": "https://github.com/jeswin/isotropy-request-response-in-browser.git"
     },
     "main": "lib/isotropy-request-response-in-browser.js",
+    "scripts": {
+        "test": "mocha dist/test/test.js"
+    },
     "dependencies": {
         "events": "*"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "babel-polyfill": "*",
+        "babel-preset-es2015": "*",
+        "babel-preset-react": "*",
+        "babel-preset-stage-2": "*",
+        "babel-plugin-transform-class-properties": "*",
+        "babel-relay-plugin-loader": "*",
+        "mocha": "*",
+        "should": "*"
+    },
     "engines": { "node": ">= 0.11.9" },
     "keywords": ["isomorphic", "http"],
     "license" : "GPL-3.0+"
