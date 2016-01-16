@@ -2,7 +2,7 @@
 import EventEmitter from 'events';
 import util from "./util";
 
-class Request extends EventEmitter {
+class IncomingMessage extends EventEmitter {
     statusCode: number;
     statusMessage: string;
     _headers: Object;
@@ -48,10 +48,10 @@ class Request extends EventEmitter {
     }
 
 
-    setTimeout(msecs: number, cb: Function) : Request {
+    setTimeout(msecs: number, cb: Function) : IncomingMessage {
         setTimeout(cb, msecs);
         return this;
     }
 }
 
-export default Request;
+export default IncomingMessage;

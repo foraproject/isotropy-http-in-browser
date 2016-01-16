@@ -2,7 +2,7 @@
 import EventEmitter from 'events';
 import util from "./util";
 
-class Response extends EventEmitter {
+class ServerResponse extends EventEmitter {
     statusCode: number;
     statusMessage: string;
     finished: boolean;
@@ -44,7 +44,7 @@ class Response extends EventEmitter {
         this._headers[field] = val;
     }
 
-    setTimeout(msecs: number, cb: Function) : Response {
+    setTimeout(msecs: number, cb: Function) : ServerResponse {
         setTimeout(cb, msecs);
         return this;
     }
@@ -71,4 +71,4 @@ class Response extends EventEmitter {
     }
 }
 
-export default Response;
+export default ServerResponse;

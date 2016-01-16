@@ -1,8 +1,8 @@
 /* @flow */
-import Request from "./request";
-import Response from "./response";
+import IncomingMessage from "./incoming-message";
+import ServerResponse from "./server-response";
 
 export default {
-    Request,
-    Response
+    IncomingMessage,
+    ServerResponse
 }
