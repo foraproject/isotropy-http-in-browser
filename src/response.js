@@ -6,7 +6,6 @@ class Response extends EventEmitter {
     statusCode: number;
     statusMessage: string;
     finished: boolean;
-    socket: { writable: boolean };
     _headers: Object;
     headersSent: true;
     sendDate: true;
@@ -20,13 +19,15 @@ class Response extends EventEmitter {
         this.headersSent = true;
         this.sendDate = true;
         this.body = "";
-
         this._headers = {};
-        this.socket = { writable: true };
 
         for (var key in params) {
             this[key] = params[key];
         }
+    }
+
+    get socket() : void {
+        throw new Error("Not implemented");
     }
 
     addTrailers(headers: Object) {

@@ -19,6 +19,20 @@ describe("Isotropy Request", () => {
             req.emit("someevent");
         });
     });
+
+    it("Must set headers", () => {
+        const req = new lib.Request({ host: "www.example.com", method: "GET" });
+        req.headers = { "Accept": "text/plain" };
+        req.headers["Accept"].should.equal("text/plain");
+    });
+
+    it("Must set raw headers", () => {
+        const req = new lib.Request({ host: "www.example.com", method: "GET" });
+        req.headers = { "Accept": "text/plain", "Accept-Encoding": "gzip, deflate" };
+        req.rawHeaders.length.should.equal(4);
+        req.rawHeaders[0].should.equal("Accept");
+        req.rawHeaders[1].should.equal("text/plain");
+    });
 });
 
 describe("Isotropy Response", () => {
@@ -56,7 +70,17 @@ describe("Isotropy Response", () => {
             resp.on("end", function() {
                 resp.finished.should.be.true();
                 resolve();
-            })
+            });
+            resp.end();
+        });
+    });
+
+    it("Must call cb() on setTimeout", () => {
+        const resp = new lib.Response({ body: "hello world" });
+        return new Promise((resolve, reject) => {
+            resp.setTimeout(10, () => {
+                resolve();
+            });
             resp.end();
         });
     });
