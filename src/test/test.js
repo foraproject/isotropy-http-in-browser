@@ -1,7 +1,7 @@
 import __polyfill from "babel-polyfill";
 import should from "should";
 
-import lib from "../isotropy-request-response-in-browser";
+import lib from "../isotropy-http-in-browser";
 
 describe("Isotropy IncomingMessage", () => {
     it("Must be created", () => {
