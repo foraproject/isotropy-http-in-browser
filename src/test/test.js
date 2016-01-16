@@ -54,6 +54,7 @@ describe("Isotropy Response", () => {
         const resp = new lib.Response({ body: "hello world" });
         return new Promise((resolve, reject) => {
             resp.on("end", function() {
+                resp.finished.should.be.true();
                 resolve();
             })
             resp.end();

@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import util from "./util";
 
 class Response extends EventEmitter {
+    finished: boolean;
     socket: { writable: boolean };
     _headers: Object;
 
@@ -26,6 +27,7 @@ class Response extends EventEmitter {
     }
 
     end(body: string) {
+        this.finished = true;
         this.emit("end", body);
     }
 }
