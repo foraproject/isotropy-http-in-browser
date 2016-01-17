@@ -3,6 +3,22 @@ import should from "should";
 
 import lib from "../isotropy-http-in-browser";
 
+describe("Isotropy Http", () => {
+    it("Must create a Server", () => {
+        const server = new lib.createServer(() => {});
+        server.should.not.be.empty();
+    });
+});
+
+describe("Isotropy Server", () => {
+    it("Must listen", () => {
+        const server = new lib.createServer(() => resolve());
+        server.listen(80, "localhost");
+        server.port.should.equal(80);
+        server.host.should.equal("localhost");
+    });
+});
+
 describe("Isotropy IncomingMessage", () => {
     it("Must be created", () => {
         const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });

@@ -1,7 +1,4 @@
 /* @flow */
-const isDefined = function(val: any) : boolean {
-    return (typeof val !== "undefined" && val !== null);
-};
 
 const assign = function(target: Object, name: string, source: Object, required: boolean) {
     required = isDefined(required) ? required : true;

@@ -1,6 +1,5 @@
 /* @flow */
 import EventEmitter from 'events';
-import util from "./util";
 
 class IncomingMessage extends EventEmitter {
     statusCode: number;

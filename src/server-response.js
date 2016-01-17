@@ -1,6 +1,9 @@
 /* @flow */
 import EventEmitter from 'events';
-import util from "./util";
+
+const isDefined = function(val: any) : boolean {
+    return (typeof val !== "undefined" && val !== null);
+};
 
 class ServerResponse extends EventEmitter {
     statusCode: number;
@@ -35,7 +38,7 @@ class ServerResponse extends EventEmitter {
     }
 
     removeHeader(name: string) {
-        if (util.isDefined(this._headers[name])) {
+        if (isDefined(this._headers[name])) {
             this._headers[name] = undefined;
         }
     }
