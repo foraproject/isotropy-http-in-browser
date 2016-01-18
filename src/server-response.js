@@ -14,7 +14,7 @@ class ServerResponse extends EventEmitter {
     sendDate: true;
     body: string;
 
-    constructor(params: Object) {
+    constructor(params: Object = {}) {
         super();
         this.statusCode = -1;
         this.statusMessage = "";

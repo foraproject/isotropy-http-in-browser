@@ -1,23 +1,15 @@
+/* @flow */
 import Server from "./server";
-
-export type NameValuePairType = {
-    name: string,
-    value: string
-};
-
-export type MakeRequestArgsType = {
-    port?: number,
-    host?: string,
-    url: string,
-    method?: string,
-    body: string,
-    cookies: Array<NameValuePairType>
-};
+import type { RequestArgsType } from "./server";
 
 class Dispatcher {
-    servers: Array<Server> = [];
+    servers: Array<{ port: number, host: string, server: Server }>;
 
-    add(port: string, host: string, server: Server) {
+    constructor() {
+        this.servers = [];
+    }
+
+    add(port: number, host: string, server: Server) : void {
         if (!port) {
             throw new Error(`"${port}" is not a valid port. Cannot bind.`)
         }
@@ -27,23 +19,21 @@ class Dispatcher {
         } else {
             throw new Error(`EADDRINUSE: There is already a listener on ${host}:${port}`);
         }
-        return { host, port };
     }
 
-    get(port: string, host: string) {
+    get(port: number, host: string) : ?Server {
         host = host || "";
-        const server = this.servers.filter(s => (s.host === host || s.host === "") && s.port === port);
-        return server.length ? server[0] : null;
+        const servers = this.servers.filter(s => (s.host === host || s.host === "") && s.port === port);
+        return servers.length ? servers[0].server : null;
     }
 
-    remove(port: string, host: string) {
+    remove(port: number, host: string) : void {
         host = host || "";
         this.servers = this.servers.filter(s => s.host !== host || s.port !== port);
     }
 
-    makeRequest(_options: MakeRequestArgsType) {
+    makeRequest(port: number, host: string, _options: RequestArgsType) : void {
         const options = Object.assign({}, _options);
-        options.host = options.host || "localhost";
     }
 }
 

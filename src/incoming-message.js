@@ -11,7 +11,7 @@ class IncomingMessage extends EventEmitter {
     url: string;
 
 
-    constructor(params: Object) {
+    constructor(params: Object = {}) {
         super();
 
         this.statusCode = -1;

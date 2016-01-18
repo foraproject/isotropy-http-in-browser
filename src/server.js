@@ -6,13 +6,26 @@ import ServerResponse from "./server-response";
 
 let dispatcher: Dispatcher;
 
+export type NameValuePairType = {
+    name: string,
+    value: string
+};
+
+export type RequestArgsType = {
+    url: string,
+    method: ?string,
+    body: string,
+    cookies: Array<NameValuePairType>,
+    headers: Object
+};
+
 class Server  extends EventEmitter {
     timeout: number;
     port: number;
     host: string;
     maxHeadersCount: number;
 
-    constructor(requestListener) {
+    constructor(requestListener: (req: IncomingMessage, res: ServerResponse) => void) {
         super();
         this.requestListener = requestListener;
 
@@ -29,7 +42,7 @@ class Server  extends EventEmitter {
         return 1;
     }
 
-    getConnections(cb: (err: Object, connections: number) => void) {
+    getConnections(cb: (err: ?Object, connections: number) => void) {
         cb(null, 1);
     }
 
@@ -75,10 +88,10 @@ class Server  extends EventEmitter {
         return this;
     }
 
-    _handle(request) {
+    _handle(request: RequestArgsType) {
         const req = new IncomingMessage();
         req.url = request.url;
-        req.method = request.method;
+        req.method = request.method || "GET";
         req.headers = request.headers;
 
         const res = new ServerResponse();
