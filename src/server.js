@@ -1,6 +1,8 @@
 /* @flow */
 import EventEmitter from 'events';
 import Dispatcher from "./dispatcher";
+import IncomingMessage from "./incoming-message";
+import ServerResponse from "./server-response";
 
 let dispatcher: Dispatcher;
 
@@ -35,7 +37,7 @@ class Server  extends EventEmitter {
         return { port: this.port, family: 'IPv4', address: this.host };
     }
 
-    listen(args: any) {
+    listen() {
         let cb;
         if (arguments.length === 3) {
             this.port = arguments[0];
@@ -48,11 +50,13 @@ class Server  extends EventEmitter {
             } else {
                 this.host = arguments[1];
             }
+        } else if (arguments.length === 1) {
+            this.port = arguments[0];
+            this.host = "";
         }
-        this.port = this.port || 80;
-        this.host = this.host || "localhost";
         this.dispatcher.add(this.port, this.host, this);
         this.emit("listening");
+
         if (cb) {
             cb();
         }
@@ -60,7 +64,7 @@ class Server  extends EventEmitter {
 
     close() : void {
         if (this.port) {
-            this.dispatcher.close(this.port, this.host);
+            this.dispatcher.remove(this.port, this.host);
         } else {
             throw new Error("Server is not listening.");
         }
@@ -69,6 +73,18 @@ class Server  extends EventEmitter {
     setTimeout(msecs: number, cb: Function) : Server {
         setTimeout(cb, msecs);
         return this;
+    }
+
+    _handle(request) {
+        const req = new IncomingMessage();
+        req.url = request.url;
+        req.method = request.method;
+        req.headers = request.headers;
+
+        const res = new ServerResponse();
+        res._setHeader("Date", Date.now().toString());
+
+        this.requestListener(req, res);
     }
 }
 
