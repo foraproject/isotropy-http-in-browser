@@ -4,6 +4,8 @@ import Dispatcher from "./dispatcher";
 import IncomingMessage from "./incoming-message";
 import ServerResponse from "./server-response";
 
+import type { PartType } from "./incoming-message";
+
 let dispatcher: Dispatcher;
 
 export type NameValuePairType = {
@@ -14,7 +16,8 @@ export type NameValuePairType = {
 export type RequestArgsType = {
     url: string,
     method: ?string,
-    body: string,
+    body: { [key: string ]: string },
+    parts: Array<PartType>,
     cookies: Array<NameValuePairType>,
     headers: Object
 };
@@ -88,11 +91,15 @@ class Server  extends EventEmitter {
         return this;
     }
 
-    _handle(request: RequestArgsType) {
+    __handleRequest(request: RequestArgsType) {
         const req = new IncomingMessage();
+
         req.url = request.url;
         req.method = request.method || "GET";
         req.headers = request.headers;
+        req.__setBody(request.body || {});
+        req.__setParts(request.parts || []);
+        req.cookies = request.cookies;
 
         const res = new ServerResponse();
         res._setHeader("Date", Date.now().toString());

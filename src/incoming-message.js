@@ -1,6 +1,27 @@
 /* @flow */
 import EventEmitter from 'events';
 
+export type FilePartType = {
+    fieldname: string;
+    file: string;
+    filename: string;
+    encoding: string;
+    mimetype: string;
+};
+
+export type FieldPartType = {
+    fieldname: string;
+    val: string;
+    fieldnameTruncated: boolean;
+    valTruncated: boolean;
+    encoding: string;
+    mimetype: string;
+};
+
+export type HashType = { [key: string]: string };
+
+export type PartType = FilePartType | FieldPartType;
+
 class IncomingMessage extends EventEmitter {
     statusCode: number;
     statusMessage: string;
@@ -9,7 +30,8 @@ class IncomingMessage extends EventEmitter {
     method: string;
     _rawHeaders: Array<string>;
     url: string;
-
+    __body: HashType;
+    __parts: Array<PartType>;
 
     constructor(params: Object = {}) {
         super();
@@ -42,8 +64,28 @@ class IncomingMessage extends EventEmitter {
         this._rawHeaders = rawHeaders;
     }
 
+
     get rawHeaders() : Array<string> {
         return this._rawHeaders;
+    }
+
+
+    __getBody() : HashType {
+        return this.__body;
+    }
+    __setBody(val: HashType) : void {
+        this.__body = val;
+    }
+
+
+    __getParts() : Array<PartType> {
+        return this.__parts;
+    }
+    __setParts(val: Array<PartType>) : void {
+        this.__parts = val;
+    }
+    __addPart(val: PartType) : void {
+        this.__parts.push(val);
     }
 
 

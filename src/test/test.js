@@ -9,7 +9,7 @@ describe("Isotropy Http", () => {
         const server = new lib.createServer(() => {});
         server.should.not.be.empty();
     });
-    
+
 });
 
 describe("Isotropy Server", () => {
@@ -97,6 +97,29 @@ describe("Isotropy IncomingMessage", () => {
         req.rawHeaders.length.should.equal(4);
         req.rawHeaders[0].should.equal("Accept");
         req.rawHeaders[1].should.equal("text/plain");
+    });
+
+    it("Must set body", () => {
+        const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+        req.__setBody({ name: "isotropy", "type": "lib" });
+        req.__body.name.should.equal("isotropy");
+        req.__body.type.should.equal("lib");
+    });
+
+    it("Must set parts", () => {
+        const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+        req.__setParts([
+            { fieldname: "upload1", filename: "hello.txt", file: "foobar" },
+            { fieldname: "upload2", filename: "world.txt", file: "barbaz" },
+            { fieldname: "field1", val: "val1" },
+            { fieldname: "field2", val: "val2" }
+        ]);
+        req.__parts.length.should.equal(4);
+        req.__parts[0].fieldname.should.equal("upload1");
+        req.__parts[0].filename.should.equal("hello.txt");
+        req.__parts[1].fieldname.should.equal("upload2");
+        req.__parts[2].fieldname.should.equal("field1");
+        req.__parts[2].val.should.equal("val1");
     });
 
     it("Must call cb() on setTimeout", () => {
