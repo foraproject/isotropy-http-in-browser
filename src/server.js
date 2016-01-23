@@ -9,103 +9,103 @@ import type { PartType } from "./incoming-message";
 let dispatcher: Dispatcher;
 
 export type NameValuePairType = {
-    name: string,
-    value: string
+  name: string,
+  value: string
 };
 
 export type RequestArgsType = {
-    url: string,
-    method: ?string,
-    body: { [key: string ]: string },
-    parts: Array<PartType>,
-    cookies: Array<NameValuePairType>,
-    headers: Object
+  url: string,
+  method: ?string,
+  body: { [key: string ]: string },
+  parts: Array<PartType>,
+  cookies: Array<NameValuePairType>,
+  headers: Object
 };
 
 class Server  extends EventEmitter {
-    timeout: number;
-    port: number;
-    host: string;
-    maxHeadersCount: number;
+  timeout: number;
+  port: number;
+  host: string;
+  maxHeadersCount: number;
 
-    constructor(requestListener: (req: IncomingMessage, res: ServerResponse) => void) {
-        super();
-        this.requestListener = requestListener;
+  constructor(requestListener: (req: IncomingMessage, res: ServerResponse) => void) {
+    super();
+    this.requestListener = requestListener;
 
-        if (!dispatcher) {
-            dispatcher = new Dispatcher();
-        }
-        this.dispatcher = dispatcher;
-
-        this.timeout = 120000;
-        this.maxHeadersCount = 1000;
+    if (!dispatcher) {
+      dispatcher = new Dispatcher();
     }
+    this.dispatcher = dispatcher;
 
-    get connections() : number {
-        return 1;
+    this.timeout = 120000;
+    this.maxHeadersCount = 1000;
+  }
+
+  get connections() : number {
+    return 1;
+  }
+
+  getConnections(cb: (err: ?Object, connections: number) => void) {
+    cb(null, 1);
+  }
+
+  get address() : { port: number, family: string, address: string } {
+    return { port: this.port, family: 'IPv4', address: this.host };
+  }
+
+  listen() {
+    let cb;
+    if (arguments.length === 3) {
+      this.port = arguments[0];
+      this.host = arguments[1];
+      cb = arguments[2];
+    } else if (arguments.length === 2) {
+      this.port = arguments[0];
+      if (typeof arguments[1] === "function") {
+        cb = arguments[1];
+      } else {
+        this.host = arguments[1];
+      }
+    } else if (arguments.length === 1) {
+      this.port = arguments[0];
+      this.host = "";
     }
+    this.dispatcher.add(this.port, this.host, this);
+    this.emit("listening");
 
-    getConnections(cb: (err: ?Object, connections: number) => void) {
-        cb(null, 1);
+    if (cb) {
+      cb();
     }
+  }
 
-    get address() : { port: number, family: string, address: string } {
-        return { port: this.port, family: 'IPv4', address: this.host };
+  close() : void {
+    if (this.port) {
+      this.dispatcher.remove(this.port, this.host);
+    } else {
+      throw new Error("Server is not listening.");
     }
+  }
 
-    listen() {
-        let cb;
-        if (arguments.length === 3) {
-            this.port = arguments[0];
-            this.host = arguments[1];
-            cb = arguments[2];
-        } else if (arguments.length === 2) {
-            this.port = arguments[0];
-            if (typeof arguments[1] === "function") {
-                cb = arguments[1];
-            } else {
-                this.host = arguments[1];
-            }
-        } else if (arguments.length === 1) {
-            this.port = arguments[0];
-            this.host = "";
-        }
-        this.dispatcher.add(this.port, this.host, this);
-        this.emit("listening");
+  setTimeout(msecs: number, cb: Function) : Server {
+    setTimeout(cb, msecs);
+    return this;
+  }
 
-        if (cb) {
-            cb();
-        }
-    }
+  __handleRequest(request: RequestArgsType) {
+    const req = new IncomingMessage();
 
-    close() : void {
-        if (this.port) {
-            this.dispatcher.remove(this.port, this.host);
-        } else {
-            throw new Error("Server is not listening.");
-        }
-    }
+    req.url = request.url;
+    req.method = request.method || "GET";
+    req.headers = request.headers;
+    req.__setBody(request.body || {});
+    req.__setParts(request.parts || []);
+    req.cookies = request.cookies;
 
-    setTimeout(msecs: number, cb: Function) : Server {
-        setTimeout(cb, msecs);
-        return this;
-    }
+    const res = new ServerResponse();
+    res._setHeader("Date", Date.now().toString());
 
-    __handleRequest(request: RequestArgsType) {
-        const req = new IncomingMessage();
-
-        req.url = request.url;
-        req.method = request.method || "GET";
-        req.headers = request.headers;
-        req.__setBody(request.body || {});
-        req.__setParts(request.parts || []);
-        req.cookies = request.cookies;
-
-        const res = new ServerResponse();
-        res._setHeader("Date", Date.now().toString());
-
-        this.requestListener(req, res);
-    }
+    this.requestListener(req, res);
+  }
 }
 
 export default Server;

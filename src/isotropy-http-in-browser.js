@@ -4,12 +4,12 @@ import ServerResponse from "./server-response";
 import Server from "./server";
 
 const createServer = function(requestListener: (req: IncomingMessage, res: ServerResponse) => void) : Server {
-    return new Server(requestListener);
+  return new Server(requestListener);
 };
 
 export default {
-    createServer,
-    Server,
-    IncomingMessage,
-    ServerResponse
+  createServer,
+  Server,
+  IncomingMessage,
+  ServerResponse
 }

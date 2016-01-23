@@ -2,76 +2,79 @@
 import EventEmitter from 'events';
 
 const isDefined = function(val: any) : boolean {
-    return (typeof val !== "undefined" && val !== null);
+  return (typeof val !== "undefined" && val !== null);
 };
 
 class ServerResponse extends EventEmitter {
-    statusCode: number;
-    statusMessage: string;
-    finished: boolean;
-    _headers: Object;
-    headersSent: true;
-    sendDate: true;
-    body: string;
+  statusCode: number;
+  statusMessage: string;
+  finished: boolean;
+  _headers: Object;
+  headersSent: true;
+  sendDate: true;
+  body: string;
 
-    constructor(params: Object = {}) {
-        super();
-        this.statusCode = -1;
-        this.statusMessage = "";
-        this.finished = false;
-        this.headersSent = true;
-        this.sendDate = true;
-        this.body = "";
-        this._headers = {};
+  constructor(params: Object = {}) {
+    super();
+    this.statusCode = -1;
+    this.statusMessage = "";
+    this.finished = false;
+    this.headersSent = true;
+    this.sendDate = true;
+    this.body = "";
+    this._headers = {};
 
-        for (var key in params) {
-            this[key] = params[key];
-        }
+    for (var key in params) {
+      this[key] = params[key];
     }
+  }
 
-    get socket() : void {
-        throw new Error("Not implemented");
-    }
+  get socket() : void {
+    throw new Error("Not implemented");
+  }
 
-    addTrailers(headers: Object) {
-        this._headers = Object.assign(this._headers, headers);
-    }
+  addTrailers(headers: Object) {
+    this._headers = Object.assign(this._headers, headers);
+  }
 
-    removeHeader(name: string) {
-        if (isDefined(this._headers[name])) {
-            this._headers[name] = undefined;
-        }
+  removeHeader(name: string) {
+    if (isDefined(this._headers[name])) {
+      this._headers[name] = undefined;
     }
+  }
 
-    setHeader(field: string, val: string) {
-        this._headers[field] = val;
-    }
+  getHeader(field: string) : string {
+    return this._headers[field];
+  }
+  setHeader(field: string, val: string) {
+    this._headers[field] = val;
+  }
 
-    setTimeout(msecs: number, cb: Function) : ServerResponse {
-        setTimeout(cb, msecs);
-        return this;
-    }
+  setTimeout(msecs: number, cb: Function) : ServerResponse {
+    setTimeout(cb, msecs);
+    return this;
+  }
 
-    write(data: string) {
-        this.body += data;
-    }
+  write(data: string) {
+    this.body += data;
+  }
 
-    writeHeader(args: any) {
-        if (args.length === 2) {
-            this.statusCode = args[0];
-            this._headers = Object.assign(this._headers, args[1]);
-        } else if (args.length === 3) {
-            this.statusCode = args[0];
-            this.statusMessage = args[1];
-            this._headers = Object.assign(this._headers, args[2]);
-        }
+  writeHeader(args: any) {
+    if (args.length === 2) {
+      this.statusCode = args[0];
+      this._headers = Object.assign(this._headers, args[1]);
+    } else if (args.length === 3) {
+      this.statusCode = args[0];
+      this.statusMessage = args[1];
+      this._headers = Object.assign(this._headers, args[2]);
     }
+  }
 
-    end(body: string) {
-        this.body += body;
-        this.finished = true;
-        this.emit("end", this.body);
-    }
+  end(body: string) {
+    this.body += body;
+    this.finished = true;
+    this.emit("end", this.body);
+  }
 }
 
 export default ServerResponse;
