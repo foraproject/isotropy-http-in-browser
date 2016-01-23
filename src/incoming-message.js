@@ -1,5 +1,6 @@
 /* @flow */
 import EventEmitter from 'events';
+import stream from "stream";
 
 export type FilePartType = {
   fieldname: string;
@@ -29,6 +30,9 @@ class IncomingMessage extends EventEmitter {
 
   constructor(params: Object = {}) {
     super();
+
+    this.__body = {};
+    this.__parts = [];
 
     this.statusCode = -1;
     this.statusMessage = "";
@@ -76,10 +80,22 @@ class IncomingMessage extends EventEmitter {
     return this.__parts;
   }
   __setParts(val: Array<PartType>) : void {
-    this.__parts = val;
+    for (let part of val) {
+      this.__addPart(part);
+    }
   }
   __addPart(val: PartType) : void {
-    this.__parts.push(val);
+    if (typeof val.file === "string") {
+      const s = new stream.Readable();
+      s._read = function noop() {}; // redundant? see update below
+      s.push(val.file);
+      s.push(null);
+      const part = Object.assign({}, val);
+      part.file = s;
+      this.__parts.push(part);
+    } else {
+      this.__parts.push(val);
+    }
   }
 
 
