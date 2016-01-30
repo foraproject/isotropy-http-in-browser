@@ -112,8 +112,8 @@ describe("Isotropy IncomingMessage", () => {
     req.__setParts([
       { fieldname: "upload1", filename: "hello.txt", file: "foobar" },
       { fieldname: "upload2", filename: "world.txt", file: "barbaz" },
-      { fieldname: "field1", val: "val1" },
-      { fieldname: "field2", val: "val2" }
+      { fieldname: "field1", value: "val1" },
+      { fieldname: "field2", value: "val2" }
     ]);
     const parts = req.__getParts();
     parts.length.should.equal(4);
@@ -121,7 +121,7 @@ describe("Isotropy IncomingMessage", () => {
     parts[0].filename.should.equal("hello.txt");
     parts[1].fieldname.should.equal("upload2");
     parts[2].fieldname.should.equal("field1");
-    parts[2].val.should.equal("val1");
+    parts[2].value.should.equal("val1");
   });
 
   it("Must call cb() on setTimeout", () => {

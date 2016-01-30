@@ -3,14 +3,16 @@ import EventEmitter from 'events';
 import stream from "stream";
 
 export type FilePartType = {
+  type: "file";
   fieldname: string;
   file: string;
   filename: string;
 }
 
 export type FieldPartType = {
+  type: "field";
   fieldname: string;
-  val: string;
+  value: string;
 }
 
 export type HashType = { [key: string]: string };
@@ -85,6 +87,7 @@ class IncomingMessage extends EventEmitter {
     }
   }
   __addPart(val: PartType) : void {
+    val.type = typeof val.value !== "undefined" ? "field" : "file";
     if (typeof val.file === "string") {
       const s = new stream.Readable();
       s._read = function noop() {}; // redundant? see update below
