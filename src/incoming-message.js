@@ -5,7 +5,7 @@ import stream from "stream";
 export type FilePartType = {
   type: "file";
   fieldname: string;
-  file: string;
+  file: any ;
   filename: string;
 }
 
@@ -87,14 +87,20 @@ class IncomingMessage extends EventEmitter {
     }
   }
   __addPart(val: PartType) : void {
-    val.type = typeof val.value !== "undefined" ? "field" : "file";
-    if (typeof val.file === "string") {
+    if (typeof val.type === "undefined") {
+      throw new Error("part.type must be 'field' or 'file'.");
+    }
+    if (val.type === "file" && typeof val.file === "string") {
       const s = new stream.Readable();
       s._read = function noop() {}; // redundant? see update below
       s.push(val.file);
       s.push(null);
-      const part = Object.assign({}, val);
-      part.file = s;
+      const part = {
+        type: "file",
+        filename: val.filename,
+        fieldname: val.fieldname,
+        file: s
+      };
       this.__parts.push(part);
     } else {
       this.__parts.push(val);
