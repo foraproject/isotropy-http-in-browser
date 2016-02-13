@@ -1,12 +1,19 @@
 /* @flow */
+import parse from "parseurl";
 import Server from "./server";
-import type { RequestArgsType } from "./server";
+
+import globals from "./globals";
+
+import type { XMLHttpRequestType } from "./server";
 
 class Dispatcher {
+  static _this;
+
   servers: Array<{ port: number, host: string, server: Server }>;
 
   constructor() {
     this.servers = [];
+    globals.dispatcher = this;
   }
 
   add(port: number, host: string, server: Server) : void {
@@ -22,6 +29,7 @@ class Dispatcher {
   }
 
   get(port: number, host: string) : ?Server {
+    port = port || "";
     host = host || "";
     const servers = this.servers.filter(s => (s.host === host || s.host === "") && s.port === port);
     return servers.length ? servers[0].server : null;
@@ -32,8 +40,12 @@ class Dispatcher {
     this.servers = this.servers.filter(s => s.host !== host || s.port !== port);
   }
 
-  makeRequest(port: number, host: string, _options: RequestArgsType) : void {
-    const options = Object.assign({}, _options);
+  __XMLHttpRequest_send(xhr: XMLHttpRequestType, data: Object) : void {
+    const parsedUrl = parse(xhr);
+    const server = this.get(parseInt(parsedUrl.port), parsedUrl.hostname);
+    if (server) {
+      server.__XMLHttpRequest_send(xhr, data);
+    }
   }
 }
 

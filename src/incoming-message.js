@@ -2,22 +2,11 @@
 import EventEmitter from 'events';
 import stream from "stream";
 
-export type FilePartType = {
-  type: "file";
-  fieldname: string;
-  file: any ;
-  filename: string;
-}
-
-export type FieldPartType = {
-  type: "field";
+export type BodyPartType = {
   fieldname: string;
   value: string;
+  filename?: string;
 }
-
-export type HashType = { [key: string]: string };
-
-export type PartType = FilePartType | FieldPartType;
 
 class IncomingMessage extends EventEmitter {
   statusCode: number;
@@ -27,7 +16,7 @@ class IncomingMessage extends EventEmitter {
   method: string;
   _rawHeaders: Array<string>;
   url: string;
-  __body: HashType;
+  __body: Array<BodyPartType>;
   __parts: Array<PartType>;
 
   constructor(params: Object = {}) {
@@ -75,36 +64,6 @@ class IncomingMessage extends EventEmitter {
   }
   __setBody(val: HashType) : void {
     this.__body = val;
-  }
-
-
-  __getParts() : Array<PartType> {
-    return this.__parts;
-  }
-  __setParts(val: Array<PartType>) : void {
-    for (let part of val) {
-      this.__addPart(part);
-    }
-  }
-  __addPart(val: PartType) : void {
-    if (typeof val.type === "undefined") {
-      throw new Error("part.type must be 'field' or 'file'.");
-    }
-    if (val.type === "file" && typeof val.file === "string") {
-      const s = new stream.Readable();
-      s._read = function noop() {}; // redundant? see update below
-      s.push(val.file);
-      s.push(null);
-      const part = {
-        type: "file",
-        filename: val.filename,
-        fieldname: val.fieldname,
-        file: s
-      };
-      this.__parts.push(part);
-    } else {
-      this.__parts.push(val);
-    }
   }
 
 

@@ -13,9 +13,12 @@
   },
   "dependencies": {
     "events": "*",
-    "stream": "*"
+    "stream": "*",
+    "parseurl": "*"
   },
   "devDependencies": {
+    "isotropy-fetch": "*",
+    "fake-xml-http-request": "*",
     "babel-polyfill": "*",
     "babel-preset-es2015": "*",
     "babel-preset-react": "*",

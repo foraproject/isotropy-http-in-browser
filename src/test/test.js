@@ -1,7 +1,118 @@
 import __polyfill from "babel-polyfill";
 import should from "should";
-
+import XMLHttpRequest from "./xml-http-request";
 import lib from "../isotropy-http-in-browser";
+
+describe("Isotropy IncomingMessage", () => {
+
+  it("Gets created", () => {
+    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+    req.host.should.equal("www.example.com");
+    req.method.should.equal("GET");
+  });
+
+  it("Triggers an event", () => {
+    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+    return new Promise((resolve, reject) => {
+      req.on("someevent", function() {
+        resolve();
+      })
+      req.emit("someevent");
+    });
+  });
+
+  it("Sets headers", () => {
+    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+    req.headers = { "Accept": "text/plain" };
+    req.headers["Accept"].should.equal("text/plain");
+  });
+
+  it("Sets raw headers", () => {
+    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+    req.headers = { "Accept": "text/plain", "Accept-Encoding": "gzip, deflate" };
+    req.rawHeaders.length.should.equal(4);
+    req.rawHeaders[0].should.equal("Accept");
+    req.rawHeaders[1].should.equal("text/plain");
+  });
+
+  it("Sets body", () => {
+    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+    req.__setBody([
+      { type: "file", fieldname: "upload1", filename: "hello.txt", file: "foobar" },
+      { type: "file", fieldname: "upload2", filename: "world.txt", file: "barbaz" },
+      { type: "field", fieldname: "field1", value: "val1" },
+      { type: "field", fieldname: "field2", value: "val2" }
+    ]);
+    const parts = req.__getParts();
+    parts.length.should.equal(4);
+    parts[0].fieldname.should.equal("upload1");
+    parts[0].filename.should.equal("hello.txt");
+    parts[1].fieldname.should.equal("upload2");
+    parts[2].fieldname.should.equal("field1");
+    parts[2].value.should.equal("val1");
+  });
+
+  it("Calls cb() on setTimeout", () => {
+    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
+    return new Promise((resolve, reject) => {
+      req.setTimeout(10, () => {
+        resolve();
+      });
+    });
+  });
+});
+
+describe("Isotropy ServerResponse", () => {
+  it("Gets created", () => {
+    const res = new lib.ServerResponse({ body: "hello world" });
+    res.body.should.equal("hello world");
+  });
+
+  it("Sets the header", () => {
+    const res = new lib.ServerResponse({ body: "hello world" });
+    res.setHeader("Cache-Control", "max-age=3600");
+    const header = res.getHeader("Cache-Control");
+    header.should.equal("max-age=3600");
+  });
+
+  it("Deletes the header", () => {
+    const res = new lib.ServerResponse({ body: "hello world" });
+    res.setHeader("Cache-Control", "max-age=3600");
+    res.removeHeader("Cache-Control");
+    should.not.exist(res._headers["Cache-Control"]);
+  });
+
+  it("Triggers an event", () => {
+    const res = new lib.ServerResponse({ body: "hello world" });
+    return new Promise((resolve, reject) => {
+      res.on("someevent", function() {
+        resolve();
+      })
+      res.emit("someevent");
+    });
+  });
+
+  it("Triggers end", () => {
+    const res = new lib.ServerResponse({ body: "hello world" });
+    return new Promise((resolve, reject) => {
+      res.on("end", function() {
+        res.finished.should.be.true();
+        resolve();
+      });
+      res.end();
+    });
+  });
+
+  it("Calls cb() on setTimeout", () => {
+    const res = new lib.ServerResponse({ body: "hello world" });
+    return new Promise((resolve, reject) => {
+      res.setTimeout(10, () => {
+        resolve();
+      });
+    });
+  });
+
+});
 
 describe("Isotropy Http", () => {
 
@@ -19,21 +130,21 @@ describe("Isotropy Server", () => {
     server.close();
   });
 
-  it("Must listen", () => {
+  it("Listens", () => {
     server = new lib.createServer(() => resolve());
     server.listen(80);
     server.port.should.equal(80);
     server.host.should.equal("");
   });
 
-  it("Must listen at host:port", () => {
+  it("Listens at host:port", () => {
     server = new lib.createServer(() => resolve());
     server.listen(8080, "www.example.com");
     server.port.should.equal(8080);
     server.host.should.equal("www.example.com");
   });
 
-  it("Must listen at host:port and fire callback", () => {
+  it("Listens at host:port and fire callback", () => {
     server = new lib.createServer(() => resolve());
     return new Promise((resolve, reject) => {
       server.listen(8080, "www.example.com", () => {
@@ -44,7 +155,7 @@ describe("Isotropy Server", () => {
     });
   });
 
-  it("Must get number of connections", () => {
+  it("Gets number of connections", () => {
     server = new lib.createServer(() => resolve());
     return new Promise((resolve, reject) => {
       server.listen(8080, "www.example.com", () => {
@@ -54,7 +165,7 @@ describe("Isotropy Server", () => {
     });
   });
 
-  it("Must get number of connections async", () => {
+  it("Gets number of connections async", () => {
     server = new lib.createServer(() => resolve());
     return new Promise((resolve, reject) => {
       server.listen(8080, "www.example.com", () => {
@@ -65,123 +176,18 @@ describe("Isotropy Server", () => {
       });
     });
   });
-});
 
-describe("Isotropy IncomingMessage", () => {
-
-  it("Must be created", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    req.host.should.equal("www.example.com");
-    req.method.should.equal("GET");
-  });
-
-  it("Must trigger an event", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    return new Promise((resolve, reject) => {
-      req.on("someevent", function() {
-        resolve();
-      })
-      req.emit("someevent");
-    });
-  });
-
-  it("Must set headers", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    req.headers = { "Accept": "text/plain" };
-    req.headers["Accept"].should.equal("text/plain");
-  });
-
-  it("Must set raw headers", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    req.headers = { "Accept": "text/plain", "Accept-Encoding": "gzip, deflate" };
-    req.rawHeaders.length.should.equal(4);
-    req.rawHeaders[0].should.equal("Accept");
-    req.rawHeaders[1].should.equal("text/plain");
-  });
-
-  it("Must set body", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    req.__setBody({ name: "isotropy", "type": "lib" });
-    const body = req.__getBody();
-    body.name.should.equal("isotropy");
-    body.type.should.equal("lib");
-  });
-
-  it("Must set parts", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    req.__setParts([
-      { type: "file", fieldname: "upload1", filename: "hello.txt", file: "foobar" },
-      { type: "file", fieldname: "upload2", filename: "world.txt", file: "barbaz" },
-      { type: "field", fieldname: "field1", value: "val1" },
-      { type: "field", fieldname: "field2", value: "val2" }
-    ]);
-    const parts = req.__getParts();
-    parts.length.should.equal(4);
-    parts[0].fieldname.should.equal("upload1");
-    parts[0].filename.should.equal("hello.txt");
-    parts[1].fieldname.should.equal("upload2");
-    parts[2].fieldname.should.equal("field1");
-    parts[2].value.should.equal("val1");
-  });
-
-  it("Must call cb() on setTimeout", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    return new Promise((resolve, reject) => {
-      req.setTimeout(10, () => {
-        resolve();
-      });
-    });
-  });
-});
-
-describe("Isotropy ServerResponse", () => {
-  it("Must be created", () => {
-    const res = new lib.ServerResponse({ body: "hello world" });
-    res.body.should.equal("hello world");
-  });
-
-  it("Must set the header", () => {
-    const res = new lib.ServerResponse({ body: "hello world" });
-    res.setHeader("Cache-Control", "max-age=3600");
-    const header = res.getHeader("Cache-Control");
-    header.should.equal("max-age=3600");
-  });
-
-  it("Must delete the header", () => {
-    const res = new lib.ServerResponse({ body: "hello world" });
-    res.setHeader("Cache-Control", "max-age=3600");
-    res.removeHeader("Cache-Control");
-    should.not.exist(res._headers["Cache-Control"]);
-  });
-
-  it("Must trigger an event", () => {
-    const res = new lib.ServerResponse({ body: "hello world" });
-    return new Promise((resolve, reject) => {
-      res.on("someevent", function() {
-        resolve();
-      })
-      res.emit("someevent");
-    });
-  });
-
-  it("Must trigger end", () => {
-    const res = new lib.ServerResponse({ body: "hello world" });
-    return new Promise((resolve, reject) => {
-      res.on("end", function() {
-        res.finished.should.be.true();
-        resolve();
-      });
-      res.end();
-    });
-  });
-
-  it("Must call cb() on setTimeout", () => {
-    const res = new lib.ServerResponse({ body: "hello world" });
-    return new Promise((resolve, reject) => {
-      res.setTimeout(10, () => {
-        resolve();
-      });
-    });
-  });
+  // it("Responds to a request", () => {
+  //   server = new lib.createServer(() => resolve());
+  //   return new Promise((resolve, reject) => {
+  //     server.listen(8080, "www.example.com", () => {
+  //       const xhr = new XMLHttpRequest();
+  //       xhr.open("POST", "http://www.example.com:8080/?fh=23");
+  //       xhr.setRequestHeader("Accept","text/plain");
+  //       xhr.setRequestHeader("Content-Type","text/plain");
+  //       xhr.send("data");
+  //     });
+  //   });
+  // });
 
 });

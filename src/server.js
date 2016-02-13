@@ -8,7 +8,11 @@ import type { PartType } from "./incoming-message";
 
 let dispatcher: Dispatcher;
 
-export type NameValuePairType = {
+export type XMLHttpRequestType = {
+  method: string
+};
+
+export type CookieType = {
   name: string,
   value: string
 };
@@ -18,7 +22,7 @@ export type RequestArgsType = {
   method: ?string,
   body: { [key: string ]: string },
   parts: Array<PartType>,
-  cookies: Array<NameValuePairType>,
+  cookies: Array<CookieType>,
   headers: Object
 };
 
@@ -91,15 +95,13 @@ class Server  extends EventEmitter {
     return this;
   }
 
-  __handleRequest(request: RequestArgsType) {
-    const req = new IncomingMessage();
 
-    req.url = request.url;
-    req.method = request.method || "GET";
-    req.headers = request.headers;
-    req.__setBody(request.body || {});
-    req.__setParts(request.parts || []);
-    req.cookies = request.cookies;
+  __XMLHttpRequest_send(xhr: XMLHttpRequestType, data: Object) {
+    console.log(xhr);
+    const req = new IncomingMessage();
+    req.method = xhr.method;
+    req.url = xhr._parsedUrl.path;
+    req.headers = xhr.requestHeaders;
 
     const res = new ServerResponse();
     res._setHeader("Date", Date.now().toString());
