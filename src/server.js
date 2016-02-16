@@ -4,26 +4,24 @@ import Dispatcher from "./dispatcher";
 import IncomingMessage from "./incoming-message";
 import ServerResponse from "./server-response";
 
-import type { PartType } from "./incoming-message";
-
 let dispatcher: Dispatcher;
 
-export type XMLHttpRequestType = {
-  method: string
+export type EmulatedXMLHttpRequestType = {
+  method: string,
+  _parsedUrl: {
+    path: string,
+    pathname: string,
+    search: string,
+    query: string,
+    href: string
+  },
+  requestHeaders: Object,
+  send: () => void
 };
 
 export type CookieType = {
   name: string,
   value: string
-};
-
-export type RequestArgsType = {
-  url: string,
-  method: ?string,
-  body: { [key: string ]: string },
-  parts: Array<PartType>,
-  cookies: Array<CookieType>,
-  headers: Object
 };
 
 class Server  extends EventEmitter {
@@ -96,7 +94,7 @@ class Server  extends EventEmitter {
   }
 
 
-  __XMLHttpRequest_send(xhr: XMLHttpRequestType, data: Object) {
+  __XMLHttpRequest_send(xhr: EmulatedXMLHttpRequestType, data: Object) {
     console.log(xhr);
     const req = new IncomingMessage();
     req.method = xhr.method;

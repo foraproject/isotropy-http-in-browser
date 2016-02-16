@@ -4,7 +4,7 @@ import Server from "./server";
 
 import globals from "./globals";
 
-import type { XMLHttpRequestType } from "./server";
+import type { EmulatedXMLHttpRequestType } from "./server";
 
 class Dispatcher {
   static _this;
@@ -29,18 +29,19 @@ class Dispatcher {
   }
 
   get(port: number, host: string) : ?Server {
-    port = port || "";
+    port = port || 0;
     host = host || "";
     const servers = this.servers.filter(s => (s.host === host || s.host === "") && s.port === port);
     return servers.length ? servers[0].server : null;
   }
 
   remove(port: number, host: string) : void {
+    port = port || 0;
     host = host || "";
     this.servers = this.servers.filter(s => s.host !== host || s.port !== port);
   }
 
-  __XMLHttpRequest_send(xhr: XMLHttpRequestType, data: Object) : void {
+  __XMLHttpRequest_send(xhr: EmulatedXMLHttpRequestType, data: Object) : void {
     const parsedUrl = parse(xhr);
     const server = this.get(parseInt(parsedUrl.port), parsedUrl.hostname);
     if (server) {

@@ -43,7 +43,7 @@ describe("Isotropy IncomingMessage", () => {
       { type: "field", fieldname: "field1", value: "val1" },
       { type: "field", fieldname: "field2", value: "val2" }
     ]);
-    const parts = req.__getParts();
+    const parts = req.__getBody();
     parts.length.should.equal(4);
     parts[0].fieldname.should.equal("upload1");
     parts[0].filename.should.equal("hello.txt");

@@ -5,11 +5,11 @@ class Globals {
 
   _dispatcher: Dispatcher;
 
-  get dispatcher() {
+  get dispatcher() : Dispatcher {
     return this._dispatcher;
   }
 
-  set dispatcher(dispatcher) {
+  set dispatcher(dispatcher: Dispatcher) {
     this._dispatcher = dispatcher;
   }
 

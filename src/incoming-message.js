@@ -2,11 +2,15 @@
 import EventEmitter from 'events';
 import stream from "stream";
 
-export type BodyPartType = {
+export type FormDataEntryType = {
   fieldname: string;
   value: string;
   filename?: string;
 }
+
+export type FormDataType = Array<FormDataEntryType>;
+
+export type BodyType = string | FormDataType;
 
 class IncomingMessage extends EventEmitter {
   statusCode: number;
@@ -16,14 +20,10 @@ class IncomingMessage extends EventEmitter {
   method: string;
   _rawHeaders: Array<string>;
   url: string;
-  __body: Array<BodyPartType>;
-  __parts: Array<PartType>;
+  __body: BodyType;
 
   constructor(params: Object = {}) {
     super();
-
-    this.__body = {};
-    this.__parts = [];
 
     this.statusCode = -1;
     this.statusMessage = "";
@@ -59,10 +59,10 @@ class IncomingMessage extends EventEmitter {
   }
 
 
-  __getBody() : HashType {
+  __getBody() : BodyType {
     return this.__body;
   }
-  __setBody(val: HashType) : void {
+  __setBody(val: BodyType) : void {
     this.__body = val;
   }
 
