@@ -1,6 +1,5 @@
 /* @flow */
 import EventEmitter from 'events';
-import stream from "stream";
 
 export type FormDataEntryType = {
   fieldname: string;
