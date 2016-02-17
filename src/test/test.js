@@ -38,10 +38,10 @@ describe("Isotropy IncomingMessage", () => {
   it("Sets body", () => {
     const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
     req.__setBody([
-      { type: "file", fieldname: "upload1", filename: "hello.txt", file: "foobar" },
-      { type: "file", fieldname: "upload2", filename: "world.txt", file: "barbaz" },
-      { type: "field", fieldname: "field1", value: "val1" },
-      { type: "field", fieldname: "field2", value: "val2" }
+      { fieldname: "upload1", filename: "hello.txt", file: "foobar" },
+      { fieldname: "upload2", filename: "world.txt", file: "barbaz" },
+      { fieldname: "field1", value: "val1" },
+      { fieldname: "field2", value: "val2" }
     ]);
     const parts = req.__getBody();
     parts.length.should.equal(4);
