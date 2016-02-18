@@ -3,8 +3,9 @@ import EventEmitter from 'events';
 
 export type FormDataEntryType = {
   fieldname: string;
-  value: string;
+  value?: string;
   filename?: string;
+  file?: Object;
 }
 
 export type FormDataType = Array<FormDataEntryType>;
