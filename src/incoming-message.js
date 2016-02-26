@@ -1,5 +1,5 @@
 /* @flow */
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
 export type FormDataEntryType = {
   fieldname: string;
@@ -24,15 +24,10 @@ class IncomingMessage extends EventEmitter {
   url: string;
   __body: BodyType;
 
-  constructor(params: Object = {}) {
+  constructor() {
     super();
-
     this.statusCode = -1;
     this.statusMessage = "";
-
-    for (var key in params) {
-      this[key] = params[key];
-    }
   }
 
 

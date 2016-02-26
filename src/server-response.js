@@ -1,5 +1,5 @@
 /* @flow */
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
 const isDefined = function(val: any) : boolean {
   return (typeof val !== "undefined" && val !== null);
@@ -14,7 +14,7 @@ class ServerResponse extends EventEmitter {
   sendDate: true;
   body: string;
 
-  constructor(params: Object = {}) {
+  constructor() {
     super();
     this.statusCode = -1;
     this.statusMessage = "";
@@ -23,10 +23,6 @@ class ServerResponse extends EventEmitter {
     this.sendDate = true;
     this.body = "";
     this._headers = {};
-
-    for (var key in params) {
-      this[key] = params[key];
-    }
   }
 
   get socket() : void {

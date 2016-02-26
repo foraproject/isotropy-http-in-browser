@@ -6,9 +6,8 @@ import lib from "../isotropy-http-in-browser";
 describe("Isotropy IncomingMessage", () => {
 
   it("Gets created", () => {
-    const req = new lib.IncomingMessage({ host: "www.example.com", method: "GET" });
-    req.host.should.equal("www.example.com");
-    req.method.should.equal("GET");
+    const req = new lib.IncomingMessage();
+    req.should.not.be.empty();
   });
 
   it("Triggers an event", () => {
@@ -64,8 +63,8 @@ describe("Isotropy IncomingMessage", () => {
 
 describe("Isotropy ServerResponse", () => {
   it("Gets created", () => {
-    const res = new lib.ServerResponse({ body: "hello world" });
-    res.body.should.equal("hello world");
+    const res = new lib.ServerResponse();
+    res.should.not.be.empty();
   });
 
   it("Sets the header", () => {

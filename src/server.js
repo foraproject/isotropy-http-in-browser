@@ -1,5 +1,5 @@
 /* @flow */
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import Dispatcher from "./dispatcher";
 import IncomingMessage from "./incoming-message";
 import ServerResponse from "./server-response";
@@ -24,11 +24,13 @@ export type CookieType = {
   value: string
 };
 
-class Server  extends EventEmitter {
+class Server extends EventEmitter {
   timeout: number;
   port: number;
   host: string;
   maxHeadersCount: number;
+  dispatcher: Dispatcher;
+  requestListener: (req: IncomingMessage, res: ServerResponse) => void;
 
   constructor(requestListener: (req: IncomingMessage, res: ServerResponse) => void) {
     super();
@@ -102,7 +104,7 @@ class Server  extends EventEmitter {
     req.headers = xhr.requestHeaders;
 
     const res = new ServerResponse();
-    res._setHeader("Date", Date.now().toString());
+    res.setHeader("Date", Date.now().toString());
 
     this.requestListener(req, res);
   }
