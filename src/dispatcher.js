@@ -17,7 +17,7 @@ class Dispatcher {
   }
 
   add(port: number, host: string, server: Server) : void {
-    if (!port) {
+    if (typeof port !== "number") {
       throw new Error(`"${port}" is not a valid port. Cannot bind.`)
     }
     host = host || "";
