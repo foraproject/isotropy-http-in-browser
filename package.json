@@ -1,11 +1,11 @@
 {
   "author": "Jeswin Kumar <jeswinpk@agilehead.com>",
   "name": "isotropy-http-in-browser",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Browser versions of Node's request and response tailored for the Isotropy project.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nodejam/isotropy-http-in-browser.git"
+    "url": "https://github.com/jeswin/isotropy-http-in-browser.git"
   },
   "main": "dist/isotropy-http-in-browser.js",
   "scripts": {
